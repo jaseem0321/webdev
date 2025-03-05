@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Satisfaction Survey Form</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .survey-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+        }
+
+        .survey-container h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .survey-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .survey-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .survey-container .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .survey-container .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+
+        .survey-container .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .survey-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .survey-container .buttons {
+            text-align: right;
+        }
+
+        .survey-container button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .survey-container button[type="submit"] {
+            background-color: #007bff; /* Blue submit button */
+            color: white;
+            margin-right: 10px;
+        }
+
+        .survey-container button[type="reset"] {
+            background-color: #ddd; /* Gray reset button */
+        }
+    </style>
+</head>
+<body style="background-color: #007bff;">
+    <div class="survey-container">
+        <h3>Customer Satisfaction Survey Form</h3>
+
+        <form>
+            <h3>1) Why did you contact customer service?</h3>
+            <textarea name="contactReason"></textarea>
+
+            <label><h3>2) What method did you use to contact customer service?</h3></label>
+            <div class="radio-group">
+                <label><input type="radio" name="contactMethod" value="telephone"> Telephone</label>
+                <label><input type="radio" name="contactMethod" value="mail"> Mail</label>
+                <label><input type="radio" name="contactMethod" value="email"> E-mail</label>
+                <label><input type="radio" name="contactMethod" value="fax"> Fax</label>
+                <label><input type="radio" name="contactMethod" value="other"> Other:</label>
+                <input type="text" name="otherMethod" placeholder="Please Specify">
+            </div>
+
+            <label><h3>3) How satisfied are you with the time it took customer service to answer your question or resolve your issue?</h3></label>
+            <div class="radio-group">
+                <label><input type="radio" name="satisfactionTime" value="veryDissatisfied"> Very Dissatisfied</label>
+                <label><input type="radio" name="satisfactionTime" value="dissatisfied"> Dissatisfied</label>
+                <label><input type="radio" name="satisfactionTime" value="undecided"> Undecided</label>
+                <label><input type="radio" name="satisfactionTime" value="satisfied"> Satisfied</label>
+                <label><input type="radio" name="satisfactionTime" value="verySatisfied"> Very Satisfied</label>
+            </div>
+
+            <label><h3>Please tell us how much you agree or disagree with the following statements.</h3></label>
+
+            <label><h3>4) The customer service representative was knowledgeable and easy to understand.</h3></label>
+            <div class="radio-group">
+                <label><input type="radio" name="knowledgeable" value="stronglyDisagree"> Strongly Disagree</label>
+                <label><input type="radio" name="knowledgeable" value="disagree"> Disagree</label>
+                <label><input type="radio" name="knowledgeable" value="undecided"> Undecided</label>
+                <label><input type="radio" name="knowledgeable" value="agree"> Agree</label>
+                <label><input type="radio" name="knowledgeable" value="stronglyAgree"> Strongly Agree</label>
+            </div>
+
+            <label><h3>5) The customer service representative was able to handle my problem quickly and to my satisfaction.</h3></label>
+            <div class="radio-group">
+                <label><input type="radio" name="problemHandling" value="stronglyDisagree"> Strongly Disagree</label>
+                <label><input type="radio" name="problemHandling" value="disagree"> Disagree</label>
+                <label><input type="radio" name="problemHandling" value="undecided"> Undecided</label>
+                <label><input type="radio" name="problemHandling" value="agree"> Agree</label>
+                <label><input type="radio" name="problemHandling" value="stronglyAgree"> Strongly Agree</label>
+            </div>
+
+            <div class="buttons">
+                <button type="submit">Submit</button>
+                <button type="reset">Reset</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
