@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Booth</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            margin: 0;
+        }
+        .phase {
+            display: none;
+            text-align: center;
+        }
+        .active {
+            display: block;
+        }
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease-in-out;
+        }
+        .btn:hover {
+            background-color: #ff6f91;
+        }
+        video, canvas {
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+        .collage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+            padding: 15px;
+            background: #fff;
+            border: 5px solid #ff4081;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .collage img {
+            width: 100px;
+            height: 150px;
+            border-radius: 10px;
+            border: 3px solid #ff6f91;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .filters button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #6c63ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease-in-out;
+        }
+        .filters button:hover {
+            background: #574bff;
+            transform: scale(1.1);
+        }
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff4081;
+            margin: 20px 0;
+        }
+        .settings {
+            margin-top: 10px;
+        }
+        .settings label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .settings input {
+            width: 50px;
+            text-align: center;
+        }
+        .welcome {
+            text-align: center;
+            padding: 20px;
+        }
+        .welcome img {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .welcome h1 {
+            font-size: 36px;
+            color: #ff4081;
+            margin-bottom: 10px;
+        }
+        .welcome p {
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Phase 1: Welcome Screen -->
+    <div class="phase active" id="welcome-screen">
+        <div class="welcome">
+            <img src="Cute_Minimalist_Pastel_Color_Photobooth_Collage_Photostrip_1_d77f98a880.png" alt="Theme Image">
+            <h1>PicBooth By JASEEM</h1>
+            <p>Created on: April 2, 2025</p>
+            <p>Capture your best moments with our photo booth!</p>
+            <button class="btn" onclick="goToInstructions()">Start</button>
+        </div>
+    </div>
+
+    <!-- Phase 2: Instructions Screen -->
+    <div class="phase" id="instructions-screen">
+        <h2>Instructions</h2>
+        <p>You have <span id="timer-duration">3</span> seconds for each shot – no retakes!</p>
+        <p>This photobooth captures 5 pictures in a row, so strike your best pose and have fun!</p>
+        <p>After the session, download your digital copy and share the fun!</p>
+        <button class="btn" onclick="startCameraSession()">Start</button>
+    </div>
+
+    <!-- Phase 3: Camera Screen -->
+    <div class="phase" id="camera-screen">
+        <div>
+            <video id="video" autoplay></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <div class="filters">
+                <button onclick="applyFilter('none')">None</button>
+                <button onclick="applyFilter('grayscale(100%)')">Grayscale</button>
+                <button onclick="applyFilter('sepia(100%)')">Sepia</button>
+                <button onclick="applyFilter('invert(100%)')">Invert</button>
+                <button onclick="applyFilter('blur(5px)')">Blur</button>
+                <button onclick="applyFilter('brightness(150%)')">Bright</button>
+                <button onclick="applyFilter('contrast(200%)')">High Contrast</button>
+                <button onclick="applyFilter('saturate(200%)')">Saturated</button>
+                <button onclick="applyFilter('hue-rotate(90deg)')">Hue Rotate</button>
+                <button onclick="applyFilter('opacity(50%)')">Opacity</button>
+                <button onclick="applyFilter('drop-shadow(8px 8px 10px gray)')">Shadow</button>
+            </div>
+            <div class="timer" id="timer-display"></div>
+            <button class="btn" onclick="startCollageTimer()">📸 Capture Collage</button>
+            <button class="btn" onclick="saveCollage()">💾 Save Collage</button>
+            <button class="btn" onclick="finishSession()">Finish</button>
+            <div class="settings">
+                <label for="timer">Set Timer (seconds):</label>
+                <input type="number" id="timer" value="3" min="1" max="10" onchange="updateTimer()">
+            </div>
+        </div>
+        <div class="collage" id="collage"></div>
+    </div>
+
+    <script>
+        let cameraStarted = false;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const collage = document.getElementById('collage');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerDurationDisplay = document.getElementById('timer-duration');
+        let timerDuration = 3;
+
+        const shutterSound = new Audio('sounds/camera-shutter.mp3');
+        const beepSound = new Audio('sounds/beep.mp3');
+
+        // Go to Instructions phase
+        function goToInstructions() {
+            document.getElementById('welcome-screen').classList.remove('active');
+            document.getElementById('instructions-screen').classList.add('active');
+        }
+
+        // Start camera session and go to Camera phase
+        function startCameraSession() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStarted = true;
+                    video.srcObject = stream;
+                    document.getElementById('instructions-screen').classList.remove('active');
+                    document.getElementById('camera-screen').classList.add('active');
+                })
+                .catch(err => alert("Camera permission denied."));
+        }
+
+        // Apply filter to video
+        function applyFilter(filter) {
+            video.style.filter = filter;
+        }
+
+        // Start collage timer
+        function startCollageTimer() {
+            let photoCount = 0;
+            collage.innerHTML = ""; // Clear previous collage
+            const takePhoto = () => {
+                if (photoCount < 5) {
+                    let countdown = timerDuration;
+                    timerDisplay.innerText = countdown;
+                    beepSound.play();
+                    const interval = setInterval(() => {
+                        countdown--;
+                        timerDisplay.innerText = countdown;
+                        beepSound.play();
+                        if (countdown === 0) {
+                            clearInterval(interval);
+                            timerDisplay.innerText = "";
+                            capturePhoto();
+                            photoCount++;
+                            takePhoto();
+                        }
+                    }, 1000);
+                }
+            };
+            takePhoto();
+        }
+
+        // Capture photo
+        function capturePhoto() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.filter = video.style.filter; // Apply the current filter to the canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Create an image element for the collage
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            collage.appendChild(img);
+            shutterSound.play();
+        }
+
+        // Save collage as an image
+        function saveCollage() {
+            const collageContainer = document.createElement('canvas');
+            const context = collageContainer.getContext('2d');
+            const collageImages = collage.querySelectorAll('img');
+            const collageWidth = 150; // Set collage width
+            const collageHeight = collageImages.length * 150; // Set collage height for portrait layout
+            collageContainer.width = collageWidth;
+            collageContainer.height = collageHeight;
+
+            // Draw each image onto the collage canvas
+            collageImages.forEach((img, index) => {
+                const y = index * 150; // Position each image vertically
+                context.drawImage(img, 0, y, 150, 150);
+            });
+
+            // Save the collage as an image
+            const link = document.createElement('a');
+            link.download = 'collage.png';
+            link.href = collageContainer.toDataURL('image/png');
+            link.click();
+        }
+
+        // Finish session
+        function finishSession() {
+            document.getElementById('camera-screen').classList.remove('active');
+            document.getElementById('welcome-screen').classList.add('active');
+            if (cameraStarted) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                cameraStarted = false;
+            }
+        }
+
+        // Update timer duration
+        function updateTimer() {
+            const timerInput = document.getElementById('timer');
+            timerDuration = parseInt(timerInput.value);
+            timerDurationDisplay.innerText = timerDuration;
+        }
+    </script>
+
+</body>
+</html>
